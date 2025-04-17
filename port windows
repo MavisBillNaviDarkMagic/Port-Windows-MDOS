@@ -1,0 +1,41 @@
+name: Build MDOS Ports
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.11'
+    - name: Build Windows Port
+      run: |
+        pip install pyinstaller
+        pyinstaller ports/windows/mdos_windows.py --onefile
+
+  build-android:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up JDK
+      uses: actions/setup-java@v2
+      with:
+        java-version: '11'
+    - name: Build Android Port
+      run: |
+        ./gradlew assembleRelease
+
+  build-ios:
+    runs-on: macos-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Build iOS Port
+      run: |
+        xcodebuild -scheme MDOSApp build
